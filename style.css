@@ -1,0 +1,529 @@
+/* ============================================================
+   style.css
+
+   Design direction: a voting floor, not a brochure. Warm sand
+   paper, burnt sienna as the only accent, and the vote numbers
+   as the loudest thing on the page. Everything else stays quiet
+   so the numbers can shout.
+
+   Every colour in this file is one of the variables below.
+   Change a value here and the whole app reskins. Dark mode is
+   the same variable names with different values — that is the
+   entire mechanism.
+   ============================================================ */
+
+/* ---------- TOKENS ---------- */
+:root {
+  --ink: #241b14;         /* warm near-black, not grey */
+  --bg: #f1ece3;          /* sand */
+  --card: #fcfaf6;
+  --line: #ded5c7;
+  --muted: #7a6a5a;
+  --accent: #b4451f;      /* burnt sienna */
+  --accent-soft: #f3e1d7;
+  --gold: #a8791a;        /* amber, for the leading badge */
+  --bad: #9c2b2b;
+
+  --radius: 14px;
+  --radius-sm: 8px;
+  --shell: 1140px;
+
+  --display: "Bricolage Grotesque", Georgia, serif;
+  --body: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+[data-theme="dark"] {
+  --ink: #f0e8dd;
+  --bg: #1a1410;
+  --card: #241d17;
+  --line: #3a2f26;
+  --muted: #a0907e;
+  --accent: #e8763f;
+  --accent-soft: #38251b;
+  --gold: #d9a43a;
+  --bad: #e07a7a;
+}
+
+/* ---------- RESET ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+body, h1, h2, h3, p, figure, ul { margin: 0; }
+ul { padding: 0; list-style: none; }
+button, input, select, textarea { font: inherit; color: inherit; }
+img { max-width: 100%; display: block; }
+
+body {
+  font-family: var(--body);
+  color: var(--ink);
+  background: var(--bg);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+body.locked { overflow: hidden; }
+
+.shell {
+  width: 100%;
+  max-width: var(--shell);
+  margin-inline: auto;
+  padding-inline: 20px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* ---------- BUTTONS ---------- */
+.btn {
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.9rem;
+  font-weight: 500;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s, transform 0.08s;
+  background: none;
+}
+.btn:active { transform: translateY(1px); }
+
+.btn--ghost { border-color: var(--line); color: var(--muted); }
+.btn--ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+.btn--solid { background: var(--accent); color: #fff; }
+.btn--solid:hover { filter: brightness(1.1); }
+
+.btn--icon { border-color: var(--line); width: 40px; text-align: center; padding: 0.5rem 0; }
+
+/* Not yet voted */
+.btn--vote {
+  background: var(--accent);
+  color: #fff;
+  padding-inline: 1.25rem;
+  white-space: nowrap;
+}
+.btn--vote:hover { filter: brightness(1.12); }
+
+/* Already voted — clicking again undoes it, so it stays live. */
+.btn--voted {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
+  padding-inline: 1.1rem;
+  white-space: nowrap;
+}
+.btn--voted:hover {
+  background: transparent;
+  color: var(--muted);
+  border-color: var(--muted);
+}
+
+/* ---------- TOPBAR ---------- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.topbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 64px;
+  gap: 1rem;
+}
+.brand { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; color: inherit; }
+.brand__mark {
+  font-family: var(--display);
+  font-weight: 800;
+  background: var(--accent);
+  color: #fff;
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+}
+.brand__name { font-family: var(--display); font-weight: 700; font-size: 1.05rem; }
+.topbar__actions { display: flex; gap: 0.5rem; }
+
+/* ---------- HERO ---------- */
+.hero { padding: clamp(2.5rem, 7vw, 5rem) 0 2rem; }
+.hero__kicker {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+.hero__title {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(2rem, 5.5vw, 3.4rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  max-width: 22ch;
+}
+.hero__lede {
+  color: var(--muted);
+  max-width: 56ch;
+  margin-top: 1.1rem;
+}
+
+/* Leaderboard strip */
+.leaderboard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 2rem;
+}
+.lb__item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem 0.35rem 0.4rem;
+  font-size: 0.9rem;
+}
+.lb__rank {
+  font-family: var(--display);
+  font-weight: 800;
+  width: 22px; height: 22px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.75rem;
+}
+.lb__item:first-child .lb__rank { background: var(--gold); color: #fff; }
+.lb__name { font-weight: 500; }
+.lb__votes { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* ---------- CONTROLS ---------- */
+.controls { padding: 1rem 0 1.5rem; }
+.controls__inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  align-items: center;
+}
+.search { flex: 1 1 240px; }
+.search__input {
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+}
+.search__input::placeholder { color: var(--muted); }
+
+.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.chip {
+  cursor: pointer;
+  border: 1px solid var(--line);
+  background: var(--card);
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.88rem;
+  color: var(--muted);
+  transition: all 0.15s;
+}
+.chip:hover { border-color: var(--accent); color: var(--accent); }
+.chip--on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.chip__n { opacity: 0.6; font-variant-numeric: tabular-nums; font-size: 0.82em; }
+
+.sort { display: flex; align-items: center; gap: 0.5rem; }
+.sort__label { color: var(--muted); font-size: 0.88rem; }
+.sort__select {
+  border: 1px solid var(--line);
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 0.7rem;
+}
+
+.resultline {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 0.9rem;
+}
+
+/* ---------- GRID ---------- */
+/* One line handles every screen size. auto-fit adds as many
+   290px+ columns as will fit; the min() stops overflow on very
+   narrow phones. No media query needed for the layout. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(290px, 100%), 1fr));
+  gap: 1rem;
+  padding-bottom: 3rem;
+}
+
+/* ---------- CARD ---------- */
+.card {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.35rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.card--voted { border-color: var(--accent); }
+
+.card__badge {
+  position: absolute;
+  top: -9px; right: 14px;
+  background: var(--gold);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+}
+.card__cat { color: var(--accent); font-size: 0.78rem; font-weight: 600; }
+.card__name {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.4rem;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+.card__tagline { color: var(--muted); font-size: 0.93rem; flex: 1; }
+
+.card__meter {
+  height: 5px;
+  background: var(--accent-soft);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 0.4rem;
+}
+.card__meter-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 999px;
+  transition: width 0.45s cubic-bezier(0.3, 0.8, 0.3, 1);
+}
+
+.card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.3rem;
+}
+.card__count { color: var(--muted); font-size: 0.85rem; }
+.card__count strong {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  display: inline-block;
+}
+.card__notes { display: block; font-size: 0.78rem; }
+
+/* The number confirms the vote landed. */
+@keyframes pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.35); color: var(--accent); }
+  100% { transform: scale(1); }
+}
+.pop { animation: pop 0.35s ease; }
+
+/* ---------- EMPTY STATE ---------- */
+.empty {
+  text-align: center;
+  padding: 4rem 1rem 5rem;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  margin-bottom: 3rem;
+}
+.empty__title { font-family: var(--display); font-weight: 700; font-size: 1.3rem; }
+.empty__body { color: var(--muted); margin: 0.4rem 0 1.2rem; }
+
+/* ---------- MODAL ---------- */
+.modal { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 1rem; }
+
+/* This line matters. The browser's own [hidden] rule is weaker than
+   any class we write, so .modal's display:grid would override it and
+   the modal would show even while hidden. Matching the class AND the
+   attribute wins. That is CSS specificity in one line. */
+.modal[hidden] { display: none; }
+
+.modal__backdrop { position: absolute; inset: 0; background: rgba(26, 20, 16, 0.62); }
+.modal__panel {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  max-width: 620px;
+  width: 100%;
+  max-height: 86vh;
+  overflow-y: auto;
+  padding: 2rem;
+}
+.modal__close {
+  position: absolute;
+  top: 10px; right: 14px;
+  background: none;
+  border: none;
+  font-size: 1.7rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--muted);
+}
+.modal__close:hover { color: var(--ink); }
+
+.sheet__cat { color: var(--accent); font-size: 0.8rem; font-weight: 600; }
+.sheet__name {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 2rem;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 0.2rem 0 0.4rem;
+}
+.sheet__tagline { color: var(--muted); }
+.sheet__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  padding: 1rem 0;
+  margin: 1rem 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.sheet__stats span {
+  font-family: var(--display);
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.sheet__vote { width: 100%; }
+
+.modal__panel h3 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1rem;
+  margin: 1.4rem 0 0.3rem;
+}
+.modal__panel p { color: var(--muted); max-width: 62ch; }
+
+/* ---------- NOTES ---------- */
+.notes {
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+.notes__title { margin-top: 0 !important; font-size: 1.05rem !important; }
+
+.noteform {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem;
+  margin: 0.75rem 0 1.25rem;
+}
+.noteform__label {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+}
+.noteform__input {
+  width: 100%;
+  resize: vertical;
+  min-height: 2.8rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  line-height: 1.45;
+}
+.noteform__input--bad { border-color: var(--bad); }
+.noteform__input::placeholder { color: var(--muted); }
+
+.noteform__row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.55rem;
+  flex-wrap: wrap;
+}
+.noteform__hint { color: var(--muted); font-size: 0.78rem; flex: 1 1 auto; }
+.noteform__hint--bad { color: var(--bad); font-weight: 500; }
+.noteform__count {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.notes__list { display: flex; flex-direction: column; gap: 0.7rem; }
+.note {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 0.85rem;
+  background: var(--card);
+}
+.note--mine { border-color: var(--accent); background: var(--accent-soft); }
+.note--none {
+  border-style: dashed;
+  color: var(--muted);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 1.4rem;
+}
+.note__head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  margin-bottom: 0.2rem;
+}
+.note__by { font-weight: 600; font-size: 0.88rem; }
+.note__when { color: var(--muted); font-size: 0.75rem; flex: 1; }
+.note__del {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-decoration: underline;
+  padding: 0;
+}
+.note__del:hover { color: var(--bad); }
+.note__text {
+  font-size: 0.92rem;
+  color: var(--ink) !important;
+  max-width: none !important;
+}
+
+/* ---------- FOOTER ---------- */
+.footer {
+  border-top: 1px solid var(--line);
+  padding: 1.75rem 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* ---------- SMALL SCREENS ---------- */
+@media (max-width: 520px) {
+  .modal { padding: 0.5rem; }
+  .modal__panel { padding: 1.5rem 1.15rem; max-height: 92vh; }
+  .sheet__name { font-size: 1.6rem; }
+  .card__foot { align-items: flex-end; }
+  .sort { width: 100%; }
+  .sort__select { flex: 1; }
+}
+
+/* ---------- MOTION PREFERENCE ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
