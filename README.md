@@ -3,10 +3,8 @@
 A startup idea voting board built for the NSUT IIF Tech Team recruitment task
 (1st year — Option 2: Startup Pitch Arena).
 
-**Live site:** _add your deployed link here_
-**Repository:** _add your GitHub link here_
-
-> Fill in the blanks marked `_..._` before submitting. Delete this line.
+**Live site:** https://hirenpawar.github.io/pitch-arena
+**Repository:** https://github.com/HirenPawar/pitch-arena
 
 ---
 
@@ -152,4 +150,4 @@ thing to build next.
 
 ## Author
 
-_Your name_ — 1st year, Mechanical Engineering, NSUT
+Hiren Pawar — 1st year, Mechanical Engineering, NSUT
