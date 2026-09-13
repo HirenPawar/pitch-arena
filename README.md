@@ -60,7 +60,7 @@ with placeholder text.
 | Logic | Vanilla JavaScript (ES6+) |
 | Persistence | Web Storage API (`localStorage`) |
 | Fonts | Bricolage Grotesque, Inter (Google Fonts) |
-| Hosting | _Vercel / Netlify / GitHub Pages — state which_ |
+| Hosting | GitHub Pages |
 
 No frameworks, no UI libraries, no pre-built templates. All components and
 styling were built for this project.
@@ -81,7 +81,7 @@ startup-pitch-arena/
 No build step and no dependencies.
 
 ```bash
-git clone <your-repo-url>
+git clone <https://github.com/HirenPawar/pitch-arena>
 cd startup-pitch-arena
 ```
 
